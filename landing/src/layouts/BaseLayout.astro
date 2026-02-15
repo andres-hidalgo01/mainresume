@@ -1,0 +1,33 @@
+---
+const { title = "Andrés Hidalgo" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+
+    <meta
+      name="description"
+      content="Freelancer Web Developer - CyberSecurity Analyst"
+    />
+    <link rel="icon" href="/icons/code.ico" />
+
+    <noscript>
+      <link rel="stylesheet" href="/css/skel.css" />
+      <link rel="stylesheet" href="/css/style.css" />
+      <link rel="stylesheet" href="/css/style-wide.css" />
+      <link rel="stylesheet" href="/css/style-noscript.css" />
+    </noscript>
+  </head>
+
+  <body class="loading">
+    <slot />
+
+    <!-- ✅ IMPORTANT: is:inline para scripts en /public -->
+    <script is:inline src="/js/skel.min.js"></script>
+    <script is:inline src="/js/init.js"></script>
+  </body>
+</html>
