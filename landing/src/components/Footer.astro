@@ -1,0 +1,34 @@
+---
+export interface Props {
+  name?: string;
+  year?: number;
+  legal?: string;
+}
+
+const Defaults = {
+  name: "Digital Resume",
+  year: new Date().getFullYear(),
+  legal: "All rights reserved.",
+};
+
+const p = Astro.props as Props;
+const name = p.name && p.name.trim() ? p.name : Defaults.name;
+const year = typeof p.year === "number" ? p.year : Defaults.year;
+const legal = p.legal && p.legal.trim() ? p.legal : Defaults.legal;
+---
+
+<footer id="footer">
+  <div class="container">
+    <div class="copyright">
+      &copy; {year}
+      <strong><span>{name}</span></strong>. {legal}
+    </div>
+  </div>
+</footer>
+
+<a
+  href="#"
+  class="back-to-top d-flex align-items-center justify-content-center"
+>
+  <i class="bi bi-arrow-up-short"></i>
+</a>

@@ -1,0 +1,27 @@
+---
+import type { ServiceItem } from "../data/services";
+import { services as defaultServices } from "../data/services";
+
+const {
+  title = "Services",
+  items = defaultServices as ServiceItem[],
+} = Astro.props;
+---
+
+<section id="services" class="services">
+  <div class="container">
+    <div class="section-title">
+      <h2>{title}</h2>
+    </div>
+
+    <div class="row">
+      {items.map((srv) => (
+        <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay={String(srv.delay ?? 0)}>
+          <div class="icon"><i class={srv.icon}></i></div>
+          <h4 class="title"><a>{srv.title}</a></h4>
+          <p class="description">{srv.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

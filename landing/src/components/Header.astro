@@ -1,0 +1,53 @@
+---
+import { Picture } from "astro:assets";
+import Navbar from "./Navbar.astro";
+
+const images = import.meta.glob("../assets/img/*.{jpg,jpeg,png,webp,avif}", {
+  eager: true,
+  import: "default",
+}) as Record<string, import("astro").ImageMetadata>;
+
+const profile = "profile.avif";
+const profileImg = images[`../assets/img/${profile}`];
+---
+
+<header id="header">
+  <div class="d-flex flex-column">
+    <div class="profile">
+      {profileImg ? (
+        <Picture
+          src={profileImg}
+          alt="Profile Image"
+          class="img-fluid rounded-circle"
+          widths={[64, 96, 128, 192]}
+          sizes="(max-width: 576px) 96px, 128px"
+          formats={["avif", "webp", "jpeg"]}
+          quality={70}
+          loading="lazy"
+          decoding="async"          
+        />
+      ) : (
+        <img
+          src="/assets/img/profile.avif"
+          alt="Profile Image"
+          class="img-fluid rounded-circle"
+          width="128"
+          height="128"
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+      <h1 class="text-light"><a href="/">Andrés Hidalgo</a></h1>
+
+      <div class="social-links mt-3 text-center">
+        <a href="https://www.linkedin.com/in/andreshidalgo01/" class="linkedin" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer nofollow"><i class="bx bxl-linkedin"></i></a>
+        <a href="https://github.com/andres-hidalgo01" class="github" aria-label="GitHub" target="_blank" rel="noopener noreferrer nofollow"><i class="bx bxl-github"></i></a>
+        <a href="https://x.com/4ndr35h1d4lg0" class="twitter" aria-label="Twitter / X" target="_blank" rel="noopener noreferrer nofollow"><i class="bx bxl-twitter"></i></a>        
+      </div>
+
+    </div>
+    <Navbar />
+  </div>
+</header>
+
+

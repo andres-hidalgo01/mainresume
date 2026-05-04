@@ -1,0 +1,97 @@
+---
+export const prerender = false;
+
+import LegacyBase from "../../layouts/LegacyBase.astro";
+
+import Header from "../../components/Header.astro";
+import About from "../../components/About.astro";
+import { about } from "../../data/about";
+import Skills from "../../components/Skills.astro";
+import Resume from "../../components/Resume.astro";
+import Portfolio from "../../components/Portfolio.astro";
+import Services from "../../components/Services.astro";
+import Contact from "../../components/Contact.astro";
+import Footer from "../../components/Footer.astro";
+
+const user = Astro.locals.user;
+const expiresAt = user?.expiresAt ?? "";
+---
+
+<LegacyBase
+  title="Andrés Hidalgo | Automation Engineer & Cybersecurity Learner"
+  description="Developer with a background in QA Automation and a growing focus on cybersecurity and AI-powered workflows.Experienced with CI/CD pipelines, test automation, and security principles applied to software development."
+>
+  <!-- ======= Mobile nav toggle button ======= -->
+  <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
+
+  <!-- ======= Hero Section ======= -->
+  <section id="hero">
+    <div class="hero-container">
+      <h1>Andrés Hidalgo</h1>
+      <p>
+        I'm
+        <span
+          class="typed"
+          data-typed-items="Automation Engineer, Cybersecurity Learner, Developer, Freelancer"
+        >
+        </span>
+      </p>
+    </div>
+  </section><!-- End Hero -->
+
+  <main id="main">
+    <Header />
+    <About {...about} />
+    <Skills />
+    <Resume />
+    <Portfolio />
+    <Services />
+    <Contact />
+    <Footer />
+  </main><!-- End #main -->
+
+  <div id="private-session-expiration" data-expires-at={expiresAt}></div>
+
+  <script is:inline>
+    const sessionElement = document.getElementById(
+      "private-session-expiration",
+    );
+    const expiresAt = sessionElement?.dataset.expiresAt || "";
+
+    function redirectIfExpired() {
+      if (!expiresAt) return;
+
+      const expirationTime = new Date(expiresAt).getTime();
+      const remaining = expirationTime - Date.now();
+
+      if (remaining <= 0) {
+        window.location.replace("/access?expired=1");
+      }
+    }
+
+    function scheduleExpirationRedirect() {
+      if (!expiresAt) return;
+
+      const expirationTime = new Date(expiresAt).getTime();
+      const remaining = expirationTime - Date.now();
+
+      if (remaining <= 0) {
+        redirectIfExpired();
+        return;
+      }
+
+      setTimeout(() => {
+        redirectIfExpired();
+      }, remaining);
+    }
+
+    redirectIfExpired();
+    scheduleExpirationRedirect();
+
+    setInterval(redirectIfExpired, 1000);
+
+    window.addEventListener("focus", redirectIfExpired);
+    document.addEventListener("visibilitychange", redirectIfExpired);
+  </script>
+  
+</LegacyBase>

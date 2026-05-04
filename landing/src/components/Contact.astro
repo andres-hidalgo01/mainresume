@@ -1,0 +1,180 @@
+---
+const FORMSPREE_ID = "xkovykwp";
+
+const EMAIL = "contact@andreshidalgo.com";
+const LOCATION = "San José, Costa Rica";
+
+// WhatsApp (formato internacional sin +)
+const WHATSAPP_NUMBER = "50686918615";
+const WHATSAPP_TEXT =
+  "Hola Andrés, vi tu portafolio y me gustaría contactarte.";
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_TEXT)}`;
+
+// ✅ reCAPTCHA v2 SITE KEY (LLAVE PÚBLICA)
+// OJO: si estás en localhost y tu key NO tiene "localhost" autorizado, te va a dar error de site key inválida.
+const RECAPTCHA_SITE_KEY = "6Lel7nksAAAAAI9JgJagTaCejnLV7YiF3KofnPlL";
+---
+
+<section id="contact" class="contact">
+  <div class="container">
+    <div class="section-title">
+      <h2>Contact</h2>
+      <p>
+        Feel free to reach out for QA opportunities, collaborations, or project
+        discussions.
+      </p>
+    </div>
+
+    <div class="row" data-aos="fade-in">
+      <!-- INFO -->
+      <div class="col-lg-5 d-flex align-items-stretch">
+        <div class="info">
+          <div class="address">
+            <i class="bi bi-geo-alt"></i>
+            <h4>Location:</h4>
+            <p>{LOCATION}</p>
+          </div>
+
+          <div class="email">
+            <i class="bi bi-envelope"></i>
+            <h4>Email:</h4>
+            <p>{EMAIL}</p>
+          </div>
+
+          <div class="phone">
+            <i class="bi bi-whatsapp"></i>
+            <h4>WhatsApp:</h4>
+            <p>
+              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer">
+                Message me directly
+              </a>
+            </p>
+          </div>
+
+          <iframe
+            src="https://maps.google.com/maps?q=San%20Jose%2C%20Costa%20Rica&t=&z=12&ie=UTF8&iwloc=&output=embed"
+            frameborder="0"
+            style="border:0; width: 100%; height: 290px;"
+            allowfullscreen=""
+            loading="lazy"></iframe>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="col-lg-7 mt-5 mt-lg-0 d-flex align-items-stretch">
+        <form
+          id="contactForm"
+          action={`https://formspree.io/f/${FORMSPREE_ID}`}
+          method="POST"
+          class="php-email-form"
+          novalidate
+        >
+          <!-- Honeypot anti-spam -->
+          <input
+            type="text"
+            name="_gotcha"
+            style="display:none"
+            tabindex="-1"
+            autocomplete="off"
+          />
+
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label for="name">Your Name</label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                class="form-control"
+                required
+              />
+            </div>
+
+            <div class="form-group col-md-6">
+              <label for="email">Your Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                class="form-control"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input
+              id="subject"
+              type="text"
+              name="subject"
+              class="form-control"
+              required
+            />
+            <input
+              type="hidden"
+              name="_subject"
+              value="Portfolio Contact Form"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="10"
+              class="form-control"
+              required></textarea>
+          </div>
+
+          <!-- ✅ reCAPTCHA (render explícito) -->
+          <div class="form-group">
+            <div
+              id="recaptcha"
+              class="g-recaptcha"
+              data-sitekey={RECAPTCHA_SITE_KEY}
+            >
+            </div>
+          </div>
+
+          <div class="my-3">
+            <div class="loading" style="display:none;">Sending...</div>
+            <div class="error-message" style="display:none;"></div>
+            <div class="sent-message" style="display:none;">
+              Your message has been sent. Thank you!
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button type="submit">Send Message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- WhatsApp Floating Button -->
+  <a
+    href={WHATSAPP_URL}
+    class="whatsapp-float"
+    target="_blank"
+    rel="noreferrer"
+    aria-label="WhatsApp"
+    title="WhatsApp"
+  >
+    <i class="bi bi-whatsapp"></i>
+  </a>
+
+  <!-- IMPORTANTE:
+    1) recaptcha-init define window.onRecaptchaLoad ANTES de cargar api.js
+    2) api.js llama onRecaptchaLoad y renderiza explícitamente
+  -->
+  <script src="/assets/js/recaptcha-init.js" defer></script>
+  <script
+    src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit"
+    defer></script>
+
+  <!-- handler del form -->
+  <script src="/assets/js/contact-form.js" defer></script>
+</section>

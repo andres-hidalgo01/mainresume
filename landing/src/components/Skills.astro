@@ -1,0 +1,49 @@
+---
+import type { SkillItem } from "../data/skills";
+import { skills as defaultSkills } from "../data/skills";
+
+// Props opcionales por si quieres reutilizar el componente
+const {
+  title = "Skills",
+  items = defaultSkills as SkillItem[],
+  groupSize = 4,               // logos por slide
+  interval = 3000,             // ms
+  carouselId = "skillsCarousel"// id único si usas más de un carrusel
+} = Astro.props;
+
+// Agrupar en chunks (4 por defecto)
+const chunk = <T,>(arr: T[], size: number) =>
+  Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+
+const groups = chunk(items, groupSize);
+---
+
+<section id="skills" class="skills section-bg">
+  <div class="container">
+    <div class="section-title">
+      <h2>{title}</h2>
+    </div>
+
+    {groups.length > 0 && (
+      <div id={carouselId} class="carousel slide" data-bs-ride="carousel" data-bs-interval={String(interval)}>
+        <div class="carousel-inner">
+          {groups.map((group, index) => (
+            <div class={`carousel-item ${index === 0 ? "active" : ""}`}>
+              <div class="row g-4 justify-content-center">
+                {group.map((img) => (
+                  <div class="col-6 col-md-3">
+                    <div class="card card-body text-center">
+                      <img class="img-fluid" src={img.src} alt={img.alt ?? img.name ?? "Skill"} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</section>

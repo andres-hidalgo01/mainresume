@@ -1,0 +1,111 @@
+---
+import { education, experience } from "../data/resume";
+
+const isHeading = (text: string) => {
+  const t = (text || "").trim();
+
+  // Headings like "Responsibilities and Achievements:" / "Client Accounts:"
+  if (t.endsWith(":")) return true;
+
+  // "Featured Project: MazdaAutomationDocker"
+  if (t.startsWith("Featured Project:")) return true;
+
+  // Account headings like "Coca-Cola Account" or "Coca-Cola Account (VML Client Project)"
+  // Avoid treating normal sentences with periods as headings
+  if (/\bAccount\b/i.test(t) && !t.endsWith(".")) return true;
+
+  return false;
+};
+
+const escapeHtml = (s: string) =>
+  s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+const renderDetailsHtml = (details: unknown) => {
+  if (!details) return "";
+
+  if (!Array.isArray(details)) {
+    return `<p>${escapeHtml(String(details))}</p>`;
+  }
+
+  let html = "";
+  let bullets: string[] = [];
+
+  const flushBullets = () => {
+    if (!bullets.length) return;
+    html += `<ul class="resume-bullets">`;
+    for (const b of bullets) {
+      html += `<li>${escapeHtml(b)}</li>`;
+    }
+    html += `</ul>`;
+    bullets = [];
+  };
+
+  for (const d of details) {
+    const line = String(d ?? "").trim();
+    if (!line) continue;
+
+    if (isHeading(line)) {
+      flushBullets();
+      html += `<p class="resume-detail-heading"><strong>${escapeHtml(
+        line,
+      )}</strong></p>`;
+    } else {
+      bullets.push(line);
+    }
+  }
+
+  flushBullets();
+  return html;
+};
+---
+
+<section id="resume" class="resume">
+  <div class="container">
+    <div class="section-title">
+      <h2>Resume</h2>
+    </div>
+
+    <div class="row">
+      <!-- Education -->
+      <div class="col-lg-6" data-aos="fade-up">
+        <h3 class="resume-title">{education.sectionTitle}</h3>
+        {
+          education.items.map((item) => (
+            <div class="resume-item">
+              <h4>{item.title}</h4>
+              <h5>{item.period}</h5>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Experience -->
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+        <h3 class="resume-title">{experience.sectionTitle}</h3>
+
+        {
+          experience.items.map((item) => (
+            <div class="resume-item">
+              <h4>{item.title}</h4>
+              <h5>{item.period}</h5>
+              {item.place && (
+                <p>
+                  <em>{item.place}</em>
+                </p>
+              )}
+
+              {item.details && (
+                <div set:html={renderDetailsHtml(item.details)} />
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

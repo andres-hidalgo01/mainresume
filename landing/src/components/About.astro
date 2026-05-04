@@ -1,0 +1,52 @@
+---
+import { about } from "../data/about";
+import { Picture } from "astro:assets";
+
+const images = import.meta.glob("../assets/img/*.{jpg,jpeg,png,webp,avif}", {
+  eager: true,
+  import: "default",
+}) as Record<string, import("astro").ImageMetadata>;
+
+const image = about.image ?? "about.avif";
+const aboutImg = images[`../assets/img/${image}`];
+---
+
+<section id="about" class="about">
+  <div class="container">
+    <div class="section-title">
+      <h2>{about.title}</h2>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4" data-aos="fade-right">
+        {aboutImg ? (
+          <Picture
+            src={aboutImg}
+            alt="About image"
+            class="img-fluid rounded"
+            widths={[320, 380, 760]}
+            sizes="(max-width: 992px) 90vw, 380px"
+            formats={["avif", "webp", "jpeg"]}
+            quality={70}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <img
+            src="/assets/img/about.avif"
+            alt="About image"
+            class="img-fluid rounded"
+            loading="lazy"
+            decoding="async"
+            width="380"
+          />
+        )}
+      </div>
+
+      <div class="col-lg-8 pt-4 pt-lg-0 content" data-aos="fade-left">
+        <h3>{about.role}</h3>
+        <p class="fst-italic">{about.description}</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,144 @@
+---
+export const prerender = false;
+
+import {
+  consumeAccessToken,
+  createSession,
+  logEvent,
+} from "../../lib/security";
+import { sendOwnerNotificationEmail } from "../../lib/mailer";
+
+const token = Astro.url.searchParams.get("token");
+const ip = Astro.clientAddress || "unknown";
+const userAgent = Astro.request.headers.get("user-agent") || "";
+
+let success = false;
+let message = "Validando acceso...";
+
+if (!token) {
+  message = "No se proporcionó un token válido.";
+} else {
+  const result = consumeAccessToken(token);
+
+  if (!result.ok) {
+    const errorMap: Record<string, string> = {
+      invalid: "El enlace de acceso es inválido.",
+      used: "El enlace de acceso ya fue utilizado.",
+      expired: "El enlace de acceso expiró.",
+    };
+
+    message = errorMap[result.reason] || "No se pudo validar el acceso.";
+
+    logEvent({
+      email: "email" in result ? result.email : null,
+      event: "magic_link_verify_failed",
+      ip,
+      userAgent,
+      meta: {
+        reason: result.reason,
+      },
+    });
+  } else {
+    const session = createSession({
+      email: result.email,
+      ip,
+      userAgent,
+    });
+
+    const sessionTtlSeconds = Math.floor(
+      Number(import.meta.env.SESSION_TTL_HOURS || 8) * 60 * 60,
+    );
+
+    Astro.cookies.set("private_session", session.rawSession, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: import.meta.env.PROD,
+      maxAge: sessionTtlSeconds,
+    });
+
+    logEvent({
+      email: result.email,
+      event: "magic_link_verified",
+      ip,
+      userAgent,
+      meta: {
+        sessionExpiresAt: session.expiresAt,
+      },
+    });
+
+    await sendOwnerNotificationEmail({
+      recruiterEmail: result.email,
+      accessAt: new Date().toISOString(),
+      ip,
+      userAgent,
+    });
+
+    success = true;
+    message = "Acceso validado. Redirigiendo...";
+  }
+}
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Verificando acceso</title>
+    {success && <meta http-equiv="refresh" content="1;url=/private/resume" />}
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #666;
+        color: #fff;
+      }
+
+      .card {
+        width: min(92vw, 520px);
+        background: #111;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      }
+
+      h1 {
+        margin-top: 0;
+        font-size: 24px;
+      }
+
+      p {
+        line-height: 1.5;
+      }
+
+      a {
+        color: #c6cfb3;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="card">
+      {
+        success ? (
+          <>
+            <h1>Acceso autorizado</h1>
+            <p>{message}</p>
+          </>
+        ) : (
+          <>
+            <h1>Acceso no autorizado</h1>
+            <p>{message}</p>
+            <p>
+              <a href="/access">Solicitar un nuevo acceso</a>
+            </p>
+          </>
+        )
+      }
+    </main>
+  </body>
+</html>
