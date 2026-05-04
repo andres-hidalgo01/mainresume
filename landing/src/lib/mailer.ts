@@ -56,6 +56,7 @@ export async function sendMagicLinkEmail(params: {
   }).format(expiresDate);
 
   const ttlMinutes = Number(import.meta.env.ACCESS_TOKEN_TTL_MINUTES || 30);
+
   const ttlLabel =
     ttlMinutes === 60
       ? "1 hora"
@@ -66,16 +67,69 @@ export async function sendMagicLinkEmail(params: {
   const info = await transporter.sendMail({
     from: import.meta.env.SMTP_FROM || "CV Privado <no-reply@localhost>",
     to: params.to,
-    subject: "Acceso temporal al CV privado",
+    subject: "Acceso temporal al CV privado de Andrés Hidalgo",
+    text: `
+Acceso temporal al CV privado
+
+Se solicitó acceso privado para visualizar el CV digital de Andrés Hidalgo.
+
+Duración del enlace: ${ttlLabel}
+Válido hasta: ${prettyDate}
+
+Accede aquí:
+${params.link}
+
+Si no solicitaste este acceso, ignora este correo.
+    `,
     html: `
-      <div style="font-family:Arial,Helvetica,sans-serif;max-width:620px;margin:auto">
-        <h2>Acceso temporal</h2>
-        <p>Se solicitó acceso privado para visualizar contenido restringido.</p>
-        <p><strong>Duración del enlace:</strong> ${ttlLabel}</p>
-        <p><strong>Válido hasta:</strong> ${prettyDate}</p>
-        <p>Haz clic en el siguiente enlace:</p>
-        <p><a href="${params.link}">${params.link}</a></p>
-        <p>Si no solicitaste este acceso, ignora este correo.</p>
+      <div style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;padding:32px;">
+        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:18px;padding:32px;border:1px solid #e6e6e6;">
+          
+          <h1 style="margin:0 0 12px;color:#111;font-size:26px;">
+            Acceso temporal al CV privado
+          </h1>
+
+          <p style="margin:0 0 22px;color:#444;font-size:15px;line-height:1.6;">
+            Se solicitó acceso privado para visualizar el CV digital de 
+            <strong>Andrés Hidalgo</strong>.
+          </p>
+
+          <div style="background:#f7f7f7;border-radius:14px;padding:18px 20px;margin:24px 0;">
+            <p style="margin:0 0 8px;color:#222;font-size:15px;">
+              <strong>Duración del enlace:</strong> ${ttlLabel}
+            </p>
+
+            <p style="margin:0;color:#222;font-size:15px;">
+              <strong>Válido hasta:</strong> ${prettyDate}
+            </p>
+          </div>
+
+          <p style="margin:28px 0;text-align:center;">
+            <a 
+              href="${params.link}" 
+              style="display:inline-block;background:#111;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:999px;font-weight:bold;font-size:15px;"
+            >
+              Abrir CV privado
+            </a>
+          </p>
+
+          <p style="margin:24px 0 8px;color:#666;font-size:13px;line-height:1.5;">
+            Si el botón no funciona, copia y pega este enlace en tu navegador:
+          </p>
+
+          <p style="word-break:break-all;margin:0 0 24px;font-size:13px;">
+            <a href="${params.link}" style="color:#314f8f;">
+              ${params.link}
+            </a>
+          </p>
+
+          <hr style="border:none;border-top:1px solid #eeeeee;margin:26px 0;" />
+
+          <p style="margin:0;color:#777;font-size:12px;line-height:1.5;">
+            Si no solicitaste este acceso, puedes ignorar este correo.
+            Este enlace es temporal y de un solo uso.
+          </p>
+        </div>
       </div>
     `,
   });
