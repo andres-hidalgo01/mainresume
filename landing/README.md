@@ -1,43 +1,37 @@
-# Astro Starter Kit: Minimal
+# MainResume
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Digital resume and private access portal built with Astro.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+This project contains a public landing page and a private digital resume experience designed for recruiters, HR contacts, and professional opportunities.
 
-## 🚀 Project Structure
+## Overview
 
-Inside of your Astro project, you'll see the following folders and files:
+The goal of this project is to keep a clean public profile while allowing selected people to access a more complete version of the resume through a temporary private link.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+The private access flow uses a magic link sent by email. Once the link is used, the visitor can access the private resume for a limited time. After that time expires, the system automatically blocks access and redirects the visitor back to the access screen.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Main Features
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- Public landing page.
+- Private resume page.
+- Temporary access by email.
+- Magic link authentication.
+- Automatic access expiration.
+- Basic access logging.
+- Email notification when someone accesses the private resume.
+- Responsive and modern UI.
+- Separate public and private experience.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Project Structure
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```txt
+mainresume/
+  landing/
+    public/
+    src/
+      components/
+      data/
+      layouts/
+      pages/
+      lib/
+      middleware.ts

@@ -41,35 +41,6 @@ async function getTransporter() {
   return cachedTransporter;
 }
 
-// export async function sendMagicLinkEmail(params: {
-//   to: string;
-//   link: string;
-//   expiresAt: string;
-// }) {
-//   const transporter = await getTransporter();
-
-//   const info = await transporter.sendMail({
-//     from: import.meta.env.SMTP_FROM || "CV Privado <no-reply@localhost>",
-//     to: params.to,
-//     subject: "Acceso temporal al CV privado",
-//     html: `
-//       <div style="font-family:Arial,Helvetica,sans-serif;max-width:620px;margin:auto">
-//         <h2>Acceso temporal</h2>
-//         <p>Se solicitó acceso privado para visualizar contenido restringido.</p>
-//         <p>Haz clic en el siguiente enlace:</p>
-//         <p><a href="${params.link}">${params.link}</a></p>
-//         <p>Este enlace expira en: <strong>${params.expiresAt}</strong></p>
-//         <p>Si no solicitaste este acceso, ignora este correo.</p>
-//       </div>
-//     `,
-//   });
-
-//   return {
-//     messageId: info.messageId,
-//     previewUrl: nodemailer.getTestMessageUrl(info) || null,
-//   };
-// }
-
 export async function sendMagicLinkEmail(params: {
   to: string;
   link: string;
