@@ -1,6 +1,4 @@
 import type { APIRoute } from "astro";
-export const prerender = false;
-
 import {
   createAccessToken,
   hitRateLimit,
@@ -10,6 +8,8 @@ import {
   storeAccessRequest,
 } from "../../../lib/security";
 import { sendMagicLinkEmail } from "../../../lib/mailer";
+
+export const prerender = false;
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
@@ -82,43 +82,61 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     });
 
     const origin = import.meta.env.APP_ORIGIN || new URL(request.url).origin;
-    const magicLink = `${origin}/auth/verify?token=${encodeURIComponent(token.rawToken)}`;
+    const magicLink = `${origin}/auth/verify?token=${encodeURIComponent(
+      token.rawToken,
+    )}`;
 
     const enableTestMagicLink =
       import.meta.env.ENABLE_TEST_MAGIC_LINK === "true";
 
-    let mail: { messageId?: string; previewUrl: string | null } = {
-      previewUrl: null,
-    };
+    const hasSmtpConfig =
+      Boolean(import.meta.env.SMTP_HOST) &&
+      Boolean(import.meta.env.SMTP_PORT) &&
+      Boolean(import.meta.env.SMTP_USER) &&
+      Boolean(import.meta.env.SMTP_PASS);
 
-    if (!enableTestMagicLink) {
-      mail = await sendMagicLinkEmail({
+    let previewUrl: string | null = null;
+
+    /*
+      En Render, mientras no tengas SMTP real, NO intentamos enviar correo.
+      Si ENABLE_TEST_MAGIC_LINK=true o SMTP está vacío, devolvemos el magic link directo.
+    */
+    if (!enableTestMagicLink && hasSmtpConfig) {
+      const mail = await sendMagicLinkEmail({
         to: email,
         link: magicLink,
         expiresAt: token.expiresAt,
       });
+
+      previewUrl = mail.previewUrl;
     }
+
+    const shouldReturnMagicLink = enableTestMagicLink || !hasSmtpConfig;
+
     logEvent({
       email,
-      event: "magic_link_sent",
+      event: shouldReturnMagicLink
+        ? "test_magic_link_generated"
+        : "magic_link_sent",
       ip,
       userAgent,
       meta: {
         company,
         expiresAt: token.expiresAt,
-        previewUrl: mail.previewUrl,
+        previewUrl,
+        testMode: shouldReturnMagicLink,
       },
     });
 
     return new Response(
       JSON.stringify({
         ok: true,
-        message: enableTestMagicLink
+        message: shouldReturnMagicLink
           ? "Se generó un enlace temporal de prueba."
           : "Se envió el enlace temporal al correo indicado.",
         expiresAt: token.expiresAt,
-        previewUrl: mail.previewUrl,
-        magicLink: enableTestMagicLink ? magicLink : null,
+        previewUrl,
+        magicLink: shouldReturnMagicLink ? magicLink : null,
       }),
       {
         status: 200,
@@ -126,7 +144,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       },
     );
   } catch (error) {
-    console.error(error);
+    console.error("Access request error:", error);
 
     return new Response(
       JSON.stringify({
