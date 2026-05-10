@@ -67,12 +67,29 @@ if (!token) {
       },
     });
 
-    await sendOwnerNotificationEmail({
-      recruiterEmail: result.email,
-      accessAt: new Date().toISOString(),
-      ip,
-      userAgent,
-    });
+    // await sendOwnerNotificationEmail({
+    //   recruiterEmail: result.email,
+    //   accessAt: new Date().toISOString(),
+    //   ip,
+    //   userAgent,
+    // });
+    const enableTestMagicLink =
+      import.meta.env.ENABLE_TEST_MAGIC_LINK === "true";
+
+    const hasSmtpConfig =
+      Boolean(import.meta.env.SMTP_HOST) &&
+      Boolean(import.meta.env.SMTP_PORT) &&
+      Boolean(import.meta.env.SMTP_USER) &&
+      Boolean(import.meta.env.SMTP_PASS);
+
+    if (!enableTestMagicLink && hasSmtpConfig) {
+      await sendOwnerNotificationEmail({
+        recruiterEmail: result.email,
+        accessAt: new Date().toISOString(),
+        ip,
+        userAgent,
+      });
+    }
 
     success = true;
     message = "Acceso validado. Redirigiendo...";
