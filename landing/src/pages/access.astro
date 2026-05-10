@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const siteLabel = import.meta.env.APP_ORIGIN || "http://localhost:4321";
+const siteLabel = import.meta.env.APP_ORIGIN || "https://localhost:4321";
 ---
 
 <BaseLayout title="Iniciar sesión">
@@ -41,7 +41,8 @@ const siteLabel = import.meta.env.APP_ORIGIN || "http://localhost:4321";
           <p class="access-note">
             Se enviará un enlace temporal de un solo uso.
             <span class="access-note-nowrap">
-              El sistema registra IP, navegador, fecha, hora e intentos.
+              El sistema registra información técnica de acceso, fecha, hora e
+              intentos.
             </span>
           </p>
 
@@ -71,7 +72,7 @@ const siteLabel = import.meta.env.APP_ORIGIN || "http://localhost:4321";
         white-space: normal;
       }
     }
-    
+
     .access-wrapper {
       min-height: 100vh;
     }

@@ -67,11 +67,11 @@ export async function sendMagicLinkEmail(params: {
   const info = await transporter.sendMail({
     from: import.meta.env.SMTP_FROM || "CV Privado <no-reply@localhost>",
     to: params.to,
-    subject: "Acceso temporal al CV privado de Andrés Hidalgo",
+    subject: "Acceso temporal al Currículum Privado de Andrés Hidalgo",
     text: `
-Acceso temporal al CV privado
+Acceso temporal al Currículum Privado.
 
-Se solicitó acceso privado para visualizar el CV digital de Andrés Hidalgo.
+Se solicitó acceso privado para visualizar el Currículum Digital de Andrés Hidalgo.
 
 Duración del enlace: ${ttlLabel}
 Válido hasta: ${prettyDate}
@@ -86,7 +86,7 @@ Si no solicitaste este acceso, ignora este correo.
         <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:18px;padding:32px;border:1px solid #e6e6e6;">
           
           <h1 style="margin:0 0 12px;color:#111;font-size:26px;">
-            Acceso temporal al CV privado
+            Acceso temporal al Currículum Privado
           </h1>
 
           <p style="margin:0 0 22px;color:#444;font-size:15px;line-height:1.6;">
