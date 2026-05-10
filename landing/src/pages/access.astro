@@ -288,6 +288,19 @@ const siteLabel = import.meta.env.APP_ORIGIN || "https://localhost:4321";
 
         message.className = "message";
 
+        if (data.magicLink) {
+          message.innerHTML = `
+          Solicitud procesada correctamente.
+
+          Tiempo de validez: ${ttlLabel}
+          Disponible hasta: ${prettyDate}
+                  
+          Modo prueba:
+          <a href="${data.magicLink}" target="_blank" rel="noreferrer">Abrir enlace temporal</a>
+            `;
+          return;
+        }
+
         if (data.previewUrl) {
           message.innerHTML = `
             Solicitud procesada correctamente.

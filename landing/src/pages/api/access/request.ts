@@ -84,12 +84,20 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const origin = import.meta.env.APP_ORIGIN || new URL(request.url).origin;
     const magicLink = `${origin}/auth/verify?token=${encodeURIComponent(token.rawToken)}`;
 
-    const mail = await sendMagicLinkEmail({
-      to: email,
-      link: magicLink,
-      expiresAt: token.expiresAt,
-    });
+    const enableTestMagicLink =
+      import.meta.env.ENABLE_TEST_MAGIC_LINK === "true";
 
+    let mail: { messageId?: string; previewUrl: string | null } = {
+      previewUrl: null,
+    };
+
+    if (!enableTestMagicLink) {
+      mail = await sendMagicLinkEmail({
+        to: email,
+        link: magicLink,
+        expiresAt: token.expiresAt,
+      });
+    }
     logEvent({
       email,
       event: "magic_link_sent",
@@ -105,9 +113,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return new Response(
       JSON.stringify({
         ok: true,
-        message: "Se envió el enlace temporal al correo indicado.",
+        message: enableTestMagicLink
+          ? "Se generó un enlace temporal de prueba."
+          : "Se envió el enlace temporal al correo indicado.",
         expiresAt: token.expiresAt,
         previewUrl: mail.previewUrl,
+        magicLink: enableTestMagicLink ? magicLink : null,
       }),
       {
         status: 200,
